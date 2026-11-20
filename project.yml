@@ -1,0 +1,70 @@
+name: Materia
+options:
+  bundleIdPrefix: com.materia.research
+  deploymentTarget:
+    iOS: "26.0"
+  xcodeVersion: "26.0"
+  createIntermediateGroups: true
+packages:
+  firebase-ios-sdk:
+    url: https://github.com/firebase/firebase-ios-sdk.git
+    from: "12.19.0"
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    SWIFT_STRICT_CONCURRENCY: complete
+    ENABLE_USER_SCRIPT_SANDBOXING: YES
+    DEVELOPMENT_TEAM: ""
+    CODE_SIGN_STYLE: Automatic
+targets:
+  Materia:
+    type: application
+    platform: iOS
+    deploymentTarget: "26.0"
+    sources:
+      - path: Materia
+    dependencies:
+      - package: firebase-ios-sdk
+        product: FirebaseAILogic
+      - package: firebase-ios-sdk
+        product: FirebaseAppCheck
+      - package: firebase-ios-sdk
+        product: FirebaseCore
+    postBuildScripts:
+      - name: Copy .env for Development
+        script: |
+          if [ "${CONFIGURATION}" = "Debug" ]; then
+            if [ -f "${PROJECT_DIR}/.env" ]; then
+              echo "Copying .env to app bundle for local development..."
+              mkdir -p "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}"
+              cp "${PROJECT_DIR}/.env" "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/.env" 2>/dev/null || true
+            fi
+          else
+            echo "Non-Debug build (${CONFIGURATION}): Ensuring .env is excluded from app bundle..."
+            rm -f "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/.env"
+            rm -f "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/env"
+          fi
+        basedOnDependencyAnalysis: false
+    settings:
+      base:
+        PRODUCT_NAME: Materia
+        PRODUCT_BUNDLE_IDENTIFIER: com.materia.research.Materia
+        INFOPLIST_KEY_CFBundleDisplayName: "Matéria"
+        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
+        INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: YES
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone: "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
+        INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad: "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
+        GENERATE_INFOPLIST_FILE: YES
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        MARKETING_VERSION: "1.0.0"
+        CURRENT_PROJECT_VERSION: "1"
+        TARGETED_DEVICE_FAMILY: "1,2"
+schemes:
+  Materia:
+    build:
+      targets:
+        Materia: all
+    run:
+      config: Debug
